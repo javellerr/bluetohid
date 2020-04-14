@@ -77,6 +77,7 @@ void packet_hexdump(const unsigned char *buf, uint16_t len) {
 		return;
 
 	// --
+	// 1b 18 00 01 00 04 00 00 00 00 00
 	if (buf[0] == 0xa1 && buf[1] == 0x01) {
 		char cmd[8];
 		cmd[0] = buf[2];
