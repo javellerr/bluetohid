@@ -76,8 +76,25 @@ void packet_hexdump(const unsigned char *buf, uint16_t len) {
 	if (!len)
 		return;
 
-	// --
-	// 1b 18 00 01 00 04 00 00 00 00 00
+	// (Left Control + A)
+	// HHKB   : 1b 18 00 01 00 04 00 00 00 00 00
+        if (buf[0] == 0x1b && buf[1] == 0x18) {                                 
+                char cmd[8];                                                    
+                cmd[0] = buf[3];                                                
+                cmd[1] = 0x00;                                                  
+                cmd[2] = buf[5];                                                
+                cmd[3] = buf[6];                                                
+                cmd[4] = buf[7];                                                
+                cmd[5] = buf[8];                                                
+                cmd[6] = buf[9];                                                
+                cmd[7] = buf[10];                                               
+                                                                                
+                write(fd_hidg0, cmd, sizeof(cmd));                              
+        }
+	
+	/*
+	// (Left Control + A)
+	// FC660R : a1 01 01 00 04 00 00 00 00 00
 	if (buf[0] == 0xa1 && buf[1] == 0x01) {
 		char cmd[8];
 		cmd[0] = buf[2];
@@ -91,10 +108,9 @@ void packet_hexdump(const unsigned char *buf, uint16_t len) {
 
 		write(fd_hidg0, cmd, sizeof(cmd));
 	}
+	*/
 
-	return;
-	// --
-
+#ifdef DBG
 	for (i = 0; i < len; i++) {
 		str[(i * 3) + 0] = hexdigits[buf[i] >> 4];
 		str[(i * 3) + 1] = hexdigits[buf[i] & 0xf];
@@ -102,6 +118,7 @@ void packet_hexdump(const unsigned char *buf, uint16_t len) {
 	}
 
 	printf("%s\n", str);
+#endif
 }
 
 void packet_hci_acldata(const void *data, uint16_t size) {
