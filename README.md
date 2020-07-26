@@ -3,7 +3,7 @@ a toy project to make blue keyboard to usb keyboard
 
 # usage
 1. have a raspberry pi zero w h
-2. append two lines below before "exit 0"
+2. open "/etc/rc.local" and append two lines below before "exit 0"
   /root/hid_init.sh
   /root/hid_start (or hid_start.sh)
   
