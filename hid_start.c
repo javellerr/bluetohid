@@ -15,11 +15,9 @@
 #define le16_to_cpu(val) (val)
 
 #define HCI_CHANNEL_MONITOR	2
-#define MAX_MAINLOOP_ENTRIES 128
 #define BTSNOOP_MAX_PACKET_SIZE		(1486 + 4)
 #define BTSNOOP_OPCODE_ACL_RX_PKT	5
 #define acl_flags(h)		(h >> 12)
-#define acl_handle(h)		(h & 0x0fff)
 #define BTPROTO_HCI	1
 #define HCI_DEV_NONE	0xffff
 #define MAX_EPOLL_EVENTS 10
@@ -69,10 +67,6 @@ struct sockaddr_hci {
 int fd_hidg0;
 
 void packet_hexdump(const unsigned char *buf, uint16_t len) {
-	static const char hexdigits[] = "0123456789abcdef";
-	char str[68] = { '\0', };
-	uint16_t i;
-
 	if (!len)
 		return;
 
@@ -92,10 +86,9 @@ void packet_hexdump(const unsigned char *buf, uint16_t len) {
                 write(fd_hidg0, cmd, sizeof(cmd));                              
         }
 	
-	/*
 	// (Left Control + A)
 	// FC660R : a1 01 01 00 04 00 00 00 00 00
-	if (buf[0] == 0xa1 && buf[1] == 0x01) {
+	else if (buf[0] == 0xa1 && buf[1] == 0x01) {
 		char cmd[8];
 		cmd[0] = buf[2];
 		cmd[1] = 0x00;
@@ -108,9 +101,12 @@ void packet_hexdump(const unsigned char *buf, uint16_t len) {
 
 		write(fd_hidg0, cmd, sizeof(cmd));
 	}
-	*/
 
 #ifdef DBG
+	static const char hexdigits[] = "0123456789abcdef";
+	char str[68] = { '\0', };
+	uint16_t i;
+	
 	for (i = 0; i < len; i++) {
 		str[(i * 3) + 0] = hexdigits[buf[i] >> 4];
 		str[(i * 3) + 1] = hexdigits[buf[i] & 0xf];
